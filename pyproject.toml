@@ -8,7 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.111.0"
-
+spotipy = "^2.24.0"
+fastapi-sessions = "^0.3.2"
 
 [build-system]
 requires = ["poetry-core"]

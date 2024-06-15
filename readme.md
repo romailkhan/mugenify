@@ -22,3 +22,8 @@ This is the README file for the Gemini Contest API project.
 
    ```bash
    fastapi dev main.py
+
+   *NOTE: if port 8000 is busy run the app with the following command:*
+
+   ```bash
+   uvicorn main:app --reload --host 127.0.0.1 --port 5001
