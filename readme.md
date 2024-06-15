@@ -19,7 +19,7 @@ This is a RESTful API for the Gemini Contest application. It is built using Flas
    ```bash
     poetry install
 
-4. CD into the project directory:
+4. Change into the main app directory:
 
    ```bash
     cd gemini-contest-api/src
