@@ -20,14 +20,18 @@ build/
 
 # Flask
 instance/
-.env
 
 # IDE
 .vscode/
 .idea/
 *.iml
+.ruff_cache
 
 # Miscellaneous
 *.log
 *.swp
-.DS_Store
+.DS_Storew
+
+# App
+.cache
+.env

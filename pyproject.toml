@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 flask = "^3.0.3"
+spotipy = "^2.24.0"
+ruff = "^0.4.9"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
