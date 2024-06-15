@@ -12,44 +12,22 @@ dist/
 build/
 *.egg
 *.whl
-*.so
-*.dll
-*.dylib
-*.exe
-*.msi
-*.pyc
 
 # Poetry
 .venv/
 .poetry/
 .poetry.lock
 
-# IDEs and Editors
+# Flask
+instance/
+.env
+
+# IDE
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
-*.komodoproject
-.komodotools/
-.eclipse/
-.pydevproject
-.pycharm/
-.vs/
-*.swp
-*.swo
-*.bak
-*.tmp
-*.tmp.*
-*~
-*.log
-*.pid
-*.pid.*
-*.db
-*.db-journal
-*.sqlite3
-*.sqlite3-journal
-*.cachefile
-.ipynb_checkpoints/
-.jupyter/
+*.iml
 
-.env
+# Miscellaneous
+*.log
+*.swp
+.DS_Store
