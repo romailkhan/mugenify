@@ -35,3 +35,4 @@ instance/
 # App
 .cache
 .env
+firebase-cert.json

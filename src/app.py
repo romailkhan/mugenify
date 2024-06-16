@@ -1,10 +1,18 @@
-from flask import Flask
-import spotipy
-from flask import redirect, request, session
 import os
 from dotenv import load_dotenv
+import spotipy
+from flask import Flask
+from flask import redirect, request, session
+from db.db import get_user_collection
+
+
 
 load_dotenv(".env")
+
+FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
+
+app = Flask(__name__)
+app.secret_key = FLASK_SECRET_KEY
 
 spotipy_config = {
     "client_id": os.getenv("SPOTIFY_CLIENT_ID"),
@@ -12,11 +20,6 @@ spotipy_config = {
     "redirect_uri": os.getenv("SPOTIFY_REDIRECT_URI"),
     "scope": "user-library-read user-read-playback-state user-modify-playback-state",
 }
-
-FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
-
-app = Flask(__name__)
-app.secret_key = FLASK_SECRET_KEY
 
 sp_oauth = spotipy.SpotifyOAuth(**spotipy_config)
 
@@ -46,8 +49,13 @@ def main_app():
     if not token_info:
         return redirect("/login")
     sp = spotipy.Spotify(auth=token_info["access_token"])
-    return sp.current_user()
+    
+    # add user to firestore
+    user = sp.current_user()
+    user_id = user["id"]
+    get_user_collection().document(user_id).set(user)
 
+    return user
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
