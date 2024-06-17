@@ -25,7 +25,9 @@ sp_oauth = spotipy.SpotifyOAuth(**spotipy_config)
 
 
 @app.route("/")
-def hello_world():
+def home():
+    if session.get("user", None):
+        return f"<p>Hello, {session['user']['display_name']}!</p>"
     return "<p>Hello, World!</p>"
 
 
@@ -40,11 +42,11 @@ def login():
 def callback():
     token_info = sp_oauth.get_access_token(request.args["code"])
     session["token_info"] = token_info
-    return redirect("/app")
+    return redirect("/add_user_to_db")
 
 
-@app.route("/app")
-def main_app():
+@app.route("/add_user_to_db")
+def add_user_to_db():
     token_info = session.get("token_info", None)
     if not token_info:
         return redirect("/login")
@@ -54,8 +56,11 @@ def main_app():
     user = sp.current_user()
     user_id = user["id"]
     get_user_collection().document(user_id).set(user)
+    
+    # add user to session
+    session["user"] = user
 
-    return user
+    return redirect("/")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
