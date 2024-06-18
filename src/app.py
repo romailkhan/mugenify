@@ -4,6 +4,7 @@ import spotipy
 from flask import Flask
 from flask import redirect, request, session
 from db.db import get_user_collection
+from utils import utils
 
 
 
@@ -61,6 +62,11 @@ def add_user_to_db():
     session["user"] = user
 
     return redirect("/")
+
+@app.route("/gemini")
+def gemini():
+    prompt = "Hello"
+    return(utils.gemini_api(prompt))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
