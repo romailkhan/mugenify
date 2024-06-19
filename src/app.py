@@ -5,6 +5,8 @@ from flask import Flask
 from flask import redirect, request, session
 from db.db import get_user_collection
 from utils import utils
+import uuid6
+import datetime
 
 
 
@@ -65,8 +67,29 @@ def add_user_to_db():
 
 @app.route("/gemini")
 def gemini():
-    prompt = "Hello"
-    return(utils.gemini_api(prompt))
+    user_id = session["user"]["id"]
+    prompt = "Happy"
+    num = 5
+    response = utils.gemini_api(prompt, num)
+    now = datetime.datetime.now()
+
+    uuid = str(uuid6.uuid6())
+    playlist = {
+        "uuid": uuid,
+        "prompt": prompt,
+        "songs": response,
+        "time": now
+    }
+    user_collection = get_user_collection()
+    user_collection.document(user_id).collection("playlists").add(playlist)
+
+    playlists_ref = user_collection.document(user_id).collection("playlists")
+    playlists = playlists_ref.stream()  # Retrieve all playlist documents
+
+    for playlist in playlists:
+        print(f"Playlist ID: {playlist.id}, Data: {playlist.to_dict()}")
+    
+    return(response)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)

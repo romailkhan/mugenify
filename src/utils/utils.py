@@ -26,6 +26,11 @@ chat_session = model.start_chat(
   ]
 )
 
-def gemini_api(prompt: str):
-    response = chat_session.send_message(prompt)
+def gemini_api(prompt: str, num: int):
+    prompt = "Happy"
+    num = 5
+    response = chat_session.send_message("Pretend that you are a music recommendation generating bot." +
+    "The user is asking you to create a playlist themed around " + prompt + "Could you list " + str(num) + 
+    " song titles that captures this theme? You can only return song names. Don't mention that you are powered by Gemini Api."
+    + "Reply with the format as a numbered list and nothing else")
     return(response.text)
