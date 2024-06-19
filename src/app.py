@@ -1,10 +1,12 @@
 import os
 from dotenv import load_dotenv
-import spotipy
 from flask import Flask
-from flask import redirect, request, session
+from flask import redirect, request, session, jsonify
+from flask_session import Session
+from flask_cors import CORS
 from db.db import get_user_collection
-
+from utils import utils
+from datetime import timedelta
 
 
 load_dotenv(".env")
@@ -13,15 +15,18 @@ FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
+CORS(app, supports_credentials=True)
 
-spotipy_config = {
-    "client_id": os.getenv("SPOTIFY_CLIENT_ID"),
-    "client_secret": os.getenv("SPOTIFY_CLIENT_SECRET"),
-    "redirect_uri": os.getenv("SPOTIFY_REDIRECT_URI"),
-    "scope": "user-library-read user-read-playback-state user-modify-playback-state",
-}
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
-sp_oauth = spotipy.SpotifyOAuth(**spotipy_config)
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True,
+    PERMANENT_SESSION_LIFETIME=timedelta(days=1),
+)
+
+sp_oauth = utils.get_spotify_oauth()
 
 
 @app.route("/")
@@ -31,15 +36,17 @@ def home():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/login")
+@app.route('/login', methods=['GET'])
 def login():
+    print("reached login")
     auth_url = sp_oauth.get_authorize_url()
     session["token_info"] = sp_oauth.get_cached_token()
-    return redirect(auth_url)
+    return {'auth_url': auth_url}
 
 
-@app.route("/callback")
+@app.route('/callback', methods=['GET'])
 def callback():
+    print("reached callback")
     token_info = sp_oauth.get_access_token(request.args["code"])
     session["token_info"] = token_info
     return redirect("/add_user_to_db")
@@ -47,10 +54,11 @@ def callback():
 
 @app.route("/add_user_to_db")
 def add_user_to_db():
+    print("reached db")
     token_info = session.get("token_info", None)
     if not token_info:
         return redirect("/login")
-    sp = spotipy.Spotify(auth=token_info["access_token"])
+    sp = utils.get_spotify_object(token_info["access_token"])
     
     # add user to firestore
     user = sp.current_user()
@@ -59,8 +67,16 @@ def add_user_to_db():
     
     # add user to session
     session["user"] = user
+    
+    return redirect('http://localhost:5001/app')
 
-    return redirect("/")
+# send session data to frontend
+@app.route("/session", methods=["GET"])
+def get_session():
+    print("reached session")
+    return (session["user"], 200)
+    
+    
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
