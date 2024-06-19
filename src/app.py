@@ -6,6 +6,7 @@ from flask_session import Session
 from flask_cors import CORS
 from db.db import get_user_collection
 from utils import utils
+from datetime import timedelta
 
 
 load_dotenv(".env")
@@ -18,6 +19,12 @@ CORS(app, supports_credentials=True)
 
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True,
+    PERMANENT_SESSION_LIFETIME=timedelta(days=1),
+)
 
 sp_oauth = utils.get_spotify_oauth()
 
