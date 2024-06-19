@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask import redirect, request, session, jsonify
+from flask_session import Session
 from flask_cors import CORS
 from db.db import get_user_collection
 from utils import utils
@@ -13,7 +14,10 @@ FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
-CORS(app)
+CORS(app, supports_credentials=True)
+
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 sp_oauth = utils.get_spotify_oauth()
 
@@ -57,7 +61,15 @@ def add_user_to_db():
     # add user to session
     session["user"] = user
     
-    return jsonify({'message': 'User added successfully'}), 200
+    return redirect('http://localhost:5001/app')
+
+# send session data to frontend
+@app.route("/session", methods=["GET"])
+def get_session():
+    print("reached session")
+    return (session["user"], 200)
+    
+    
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

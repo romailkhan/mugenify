@@ -14,6 +14,7 @@ python-dotenv = "^1.0.1"
 firebase-admin = "^6.5.0"
 uuid6 = "^2024.1.12"
 flask-cors = "^4.0.1"
+flask-session = "^0.8.0"
 
 
 [build-system]
