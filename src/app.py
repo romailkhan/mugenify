@@ -68,13 +68,22 @@ def add_user_to_db():
     # add user to session
     session["user"] = user
     
+    print(session["user"])
+    
     return redirect('http://localhost:5001/app')
 
 # send session data to frontend
 @app.route("/session", methods=["GET"])
 def get_session():
     print("reached session")
-    return (session["user"], 200)
+    user = session.get("user", None)
+    
+    print(session["user"])
+    
+    if user is None:
+        return jsonify({"error": "No user in session"}), 404
+    else:
+        return jsonify(user), 200
     
     
 
